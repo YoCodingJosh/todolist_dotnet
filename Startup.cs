@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Net.Sockets;
 
 namespace todolist_dotnet
 {
@@ -67,9 +69,34 @@ namespace todolist_dotnet
 
                 if (env.IsDevelopment())
                 {
-                    spa.UseAngularCliServer(npmScript: "start");
+                    if (IsPortOpen("localhost", 4200, TimeSpan.FromSeconds(2.5)))
+                    {
+                        spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
+                    }
+                    else
+                    {
+                        spa.UseAngularCliServer(npmScript: "start");
+                    }
                 }
             });
+        }
+
+        private static bool IsPortOpen(string host, int port, TimeSpan timeout)
+        {
+            try
+            {
+                using (var client = new TcpClient())
+                {
+                    var result = client.BeginConnect(host, port, null, null);
+                    var success = result.AsyncWaitHandle.WaitOne(timeout);
+                    client.EndConnect(result);
+                    return success;
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
