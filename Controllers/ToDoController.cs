@@ -12,7 +12,7 @@ namespace todolist_dotnet.Controllers
         // GET: ToDoController
         public IEnumerable<ToDoItem> Index()
         {
-            return View();
+            return new List<ToDoItem>();
         }
 
         // GET: ToDoController/Details/5
