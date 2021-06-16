@@ -8,6 +8,9 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Net.Sockets;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication;
+
+using todolist_dotnet.Data;
 
 namespace todolist_dotnet
 {
@@ -33,8 +36,13 @@ namespace todolist_dotnet
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDefaultIdentity<ApplicationUser>()
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddIdentityServer()
+                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+
+            services.AddAuthentication().AddIdentityServerJwt();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -86,6 +94,10 @@ namespace todolist_dotnet
                     }
                 }
             });
+
+            app.UseAuthentication();
+            app.UseIdentityServer();
+            app.UseAuthorization();
         }
 
         private static bool IsPortOpen(string host, int port, TimeSpan timeout)
