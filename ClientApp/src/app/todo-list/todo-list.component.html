@@ -1,0 +1,29 @@
+<h1 id="tableLabel">To-Do List</h1>
+
+<p>Here are the things you need to do.</p>
+
+<p *ngIf="!todos && isLoading"><em>Loading...</em></p>
+
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="todos; else noToDos">
+  <!-- <thead>
+    <tr>
+      <th>Date</th>
+      <th>Temp. (C)</th>
+      <th>Temp. (F)</th>
+      <th>Summary</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let forecast of forecasts">
+      <td>{{ forecast.date }}</td>
+      <td>{{ forecast.temperatureC }}</td>
+      <td>{{ forecast.temperatureF }}</td>
+      <td>{{ forecast.summary }}</td>
+    </tr>
+  </tbody> -->
+</table>
+<ng-template #noToDos>
+  <div *ngIf="!isLoading">
+    <h3>Wow! You have nothing to do.<br/>Go out and celebrate, or think of some things that you may have forgotten about!</h3>
+  </div>
+</ng-template>
