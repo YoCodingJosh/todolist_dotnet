@@ -1,16 +1,16 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.EntityFrameworkCore;
+using todolist_dotnet.Data;
+using todolist_dotnet.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Net.Sockets;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication;
-
-using todolist_dotnet.Data;
 
 namespace todolist_dotnet
 {
@@ -26,15 +26,11 @@ namespace todolist_dotnet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
-            // In production, the Angular files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/dist";
-            });
-
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlite(
+                    Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -42,7 +38,15 @@ namespace todolist_dotnet
             services.AddIdentityServer()
                 .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 
-            services.AddAuthentication().AddIdentityServerJwt();
+            services.AddAuthentication()
+                .AddIdentityServerJwt();
+            services.AddControllersWithViews();
+            services.AddRazorPages();
+            // In production, the Angular files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/dist";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,6 +55,7 @@ namespace todolist_dotnet
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseMigrationsEndPoint();
             }
             else
             {
@@ -68,11 +73,15 @@ namespace todolist_dotnet
 
             app.UseRouting();
 
+            app.UseAuthentication();
+            app.UseIdentityServer();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
 
             app.UseSpa(spa =>
@@ -84,38 +93,9 @@ namespace todolist_dotnet
 
                 if (env.IsDevelopment())
                 {
-                    if (IsPortOpen("localhost", 4200, TimeSpan.FromSeconds(2.5)))
-                    {
-                        spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
-                    }
-                    else
-                    {
-                        spa.UseAngularCliServer(npmScript: "start");
-                    }
+                    spa.UseAngularCliServer(npmScript: "start");
                 }
             });
-
-            app.UseAuthentication();
-            app.UseIdentityServer();
-            app.UseAuthorization();
-        }
-
-        private static bool IsPortOpen(string host, int port, TimeSpan timeout)
-        {
-            try
-            {
-                using (var client = new TcpClient())
-                {
-                    var result = client.BeginConnect(host, port, null, null);
-                    var success = result.AsyncWaitHandle.WaitOne(timeout);
-                    client.EndConnect(result);
-                    return success;
-                }
-            }
-            catch
-            {
-                return false;
-            }
         }
     }
 }

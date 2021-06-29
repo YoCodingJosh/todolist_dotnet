@@ -230,5 +230,5 @@ _Pvt_Extensions
 # FAKE - F# Make
 .fake/
 
-# macOS crap
+# macOS
 .DS_Store
