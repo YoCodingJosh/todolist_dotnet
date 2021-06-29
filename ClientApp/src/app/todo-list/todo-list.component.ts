@@ -1,5 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { ToDo, ToDoPriority } from '../models/ToDo';
 
 @Component({
   selector: 'app-todo-list',
@@ -10,14 +11,11 @@ export class TodoListComponent {
   public isLoading: boolean = false;
 
   constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
-    // http.get<WeatherForecast[]>(baseUrl + 'weatherforecast').subscribe(result => {
-    //   this.forecasts = result;
-    // }, error => console.error(error));
-  }
-}
+    http.get<ToDo[]>(baseUrl + 'todolist').subscribe(result => {
+      // for display purposes, we convert the ordinal enum value to its string name.
+      result.every(x => x.priority = ToDoPriority[x.priority]);
 
-// TODO: Move me to a separate file!
-interface ToDo {
-  title: string;
-  description: string;
+      this.todos = result;
+    }, error => console.error(error));
+  }
 }
