@@ -2,11 +2,15 @@ import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ToDo, ToDoPriority } from '../models/ToDo';
 
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+
 @Component({
   selector: 'app-todo-list',
   templateUrl: './todo-list.component.html'
 })
 export class TodoListComponent {
+  faCheckCircle = faCheckCircle;
+
   public todos: ToDo[];
   public isLoading: boolean = false;
 

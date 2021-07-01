@@ -10,6 +10,8 @@
       <th>Title</th>
       <th>Description</th>
       <th>Priority</th>
+      <th></th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -17,6 +19,8 @@
       <td>{{ todo.title }}</td>
       <td>{{ todo.description }}</td>
       <td>{{ todo.priority }}</td>
+      <td><a [routerLink]="['/todo/edit/' + todo.id]">Edit</a></td>
+      <td><fa-icon [icon]="faCheckCircle"></fa-icon></td>
     </tr>
   </tbody>
 </table>

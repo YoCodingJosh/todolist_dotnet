@@ -13,6 +13,7 @@ import { ApiAuthorizationModule } from 'src/api-authorization/api-authorization.
 import { AuthorizeGuard } from 'src/api-authorization/authorize.guard';
 import { AuthorizeInterceptor } from 'src/api-authorization/authorize.interceptor';
 import { TodoListComponent } from './todo-list/todo-list.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { TodoListComponent } from './todo-list/todo-list.component';
       { path: 'counter', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent, canActivate: [AuthorizeGuard] },
       { path: 'todo-list', component: TodoListComponent, /* canActivate: [AuthorizeGuard] */ }
-    ], { relativeLinkResolution: 'legacy' })
+    ], { relativeLinkResolution: 'legacy' }),
+    FontAwesomeModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true }
